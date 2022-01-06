@@ -5,24 +5,36 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 export async function createTodo(todo){
     // create a single incomplete todo with the correct 'todo' property for this user in supabase
+    const response = await client
+        .from('todos')
+        .insert([{ todo, }]);
 
     return checkError(response);
 }
 
 export async function deleteAllTodos() {
     // delete all todos for this user in supabase
+    const response = await client
+        .from('todos')
+        .delete();
 
     return checkError(response);
 }
 
 export async function getTodos() {
     // get all todos for this user from supabase
-
+    const response = await client 
+        .from('todos')
+        .select();
     return checkError(response);    
 }
 
 export async function completeTodo(id) {
     // find the and update (set complete to true), the todo that matches the correct id
+    const response = await client
+        .from('todos')
+        .update([{ complete: true }])
+        .match({ id: id });
 
     return checkError(response);    
 }
@@ -48,8 +60,8 @@ export async function redirectIfLoggedIn() {
 
 export async function signupUser(email, password){
     const response = await client.auth.signUp({ email, password });
-    
-    return checkError(response);
+    console.log('response', response);
+    return checkSignUp(response);
 }
 
 export async function signInUser(email, password){
@@ -66,4 +78,8 @@ export async function logout() {
 
 function checkError({ data, error }) {
     return error ? console.error(error) : data;
+}
+
+function checkSignUp({ user, error }) {
+    return error ? console.error(error) : user;
 }
